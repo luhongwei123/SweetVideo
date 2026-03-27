@@ -67,19 +67,36 @@ export default class PiPWindowUtil {
   }
 
   static onActionEvent(event: PiPWindow.PiPActionEventType, status?: number) {
-    if(PiPWindowUtil.playerController instanceof AVPlayerController){
-      const controller = PiPWindowUtil.playerController as AVPlayerController
-      switch (event) {
-        case 'playbackStateChanged':
-          if (status === 0) {
-            controller.pause()
-          } else {
-            controller.play()
-          }
-          break;
-        default:
-          break;
+    switch (event) {
+      case 'playbackStateChanged':
+        PiPWindowUtil.handlePlayPauseAction(status)
+        break;
+      default:
+        break;
+    }
+  }
+
+  private static handlePlayPauseAction(status?: number) {
+    const controller = PiPWindowUtil.playerController
+    if (controller instanceof AVPlayerController) {
+      if (status === 0) {
+        controller.pause()
+      } else if (status === 1) {
+        controller.play()
+      } else {
+        controller.playing ? controller.pause() : controller.play()
       }
+      return
+    }
+    if (controller instanceof MpvController) {
+      if (status === 0) {
+        controller.pause()
+      } else if (status === 1) {
+        controller.play()
+      } else {
+        controller.playing ? controller.pause() : controller.play()
+      }
+      return
     }
   }
 
